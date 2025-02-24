@@ -1,105 +1,126 @@
-const professeurs = [
-    { 
-        id: 1, 
-        nom: "Wane", 
-        prenom: "Baila", 
+let professeurs = [];
 
-    },
-    { 
-        id: 2, 
-        nom: "LO", 
-        prenom: "Mahmadane", 
-    },
-    { 
-        id: 3, 
-        nom: "Sabaly", 
-        prenom: "Adama", 
-
-    },
-];
-
-/* Recuperation du formulaire par son id*/
 const form = document.getElementById("createForm");
-/* Recuperation des champs par leurs Ids*/
-const nomElem = document.getElementById("nom");
+console.log(form.elements[0])
+
+const nomElem = form.elements["nom"];
 const prenomElem = document.getElementById("prenom");
+const gradeElem = document.getElementById("grade");
 
-/* Application d'un ecouteur d'evenement sur le formulaire*/
-form.addEventListener("submit", (e)=>{
-    /* Ajout d'une event (e) 
-    et application de e.preventDefault(); pour pour stopper
-    l'actualisation de la page au moment de la soumission*/
+
+const checkboxMatieres =  document.querySelectorAll("input[type=checkbox]");
+const checkboxError = document.getElementById("checkboxError");
+
+
+//checkboxMatieres.forEach((checkbox) => {
+//Array.from(checkboxMatieres).filter(checkbox => checkbox.checked);
+
+for (const checkbox of checkboxMatieres) {
+    checkbox.addEventListener('change', () => {
+        if(checkbox.checked){
+            checkbox.classList.remove('is-invalid')
+            checkbox.classList.add('is-valid')
+        } else {
+            checkbox.classList.remove('is-valid')
+            checkbox.classList.add('is-invalid')
+        }
+    })
+}
+    
+//})
+
+
+//const formFields = [nomElem, prenomElem, gradeElem];
+const formFieldsValidation = ["nom","prenom","grade"];
+
+form.addEventListener("submit", (e) => {
     e.preventDefault();
-    /* Verifier si la value des champs sont vide à l'aide de .value
-    */
 
-    // Recuperation du message d'erreur en concatenant l'id du champ et 'Error'
-    const nomError = document.getElementById(`${nomElem.id}Error`);
-    const prenomError = document.getElementById(`${prenomElem.id}Error`);
-
-    if(nomElem.value == ''){
-        
-        nomElem.classList.add('is-invalid');
-        nomError.classList.add('invalid-feedback');
-        nomError.textContent = "Ce champ est obligatoire";
-        return; // pour la validation champ par champ
-    }
-    nomElem.classList.remove('is-invalid'); // suppression des classes précédentes pour eviter les erreurs
-    nomError.classList.remove('invalid-feedback');
-    // Ajout des champs de succés et réinitialisation des champs d'erreurs à vide
-    nomElem.classList.add('is-valid');
-    nomError.classList.add('valid-feedback');
-    nomError.textContent = '';
-
-
-    if(prenomElem.value == ''){
-        
-        prenomElem.classList.add('is-invalid');// suppression des classes précédentes pour eviter les erreurs
-        prenomError.classList.add('invalid-feedback');
-        prenomError.textContent = "Ce champ est obligatoire";
-        return; // pour la validation champ par champ
-    }
-    prenomElem.classList.remove('is-invalid');
-    prenomError.classList.remove('invalid-feedback');
-    // Ajout des champs de succés et réinitialisation des champs d'erreurs à vide
-    prenomElem.classList.add('is-valid');
-    prenomError.classList.add('valid-feedback');
-    prenomError.textContent = '';
-})
-
-nomElem.addEventListener('focus', () => {
-    if(nomElem.classList.contains('is-invalid')){
-        nomElem.classList.remove('is-invalid'); 
-        nomError.classList.remove('invalid-feedback');
-        nomError.textContent = '';
-    }
-    if(nomElem.classList.contains('is-valid')){
-        nomElem.classList.remove('is-valid'); 
-        nomError.classList.remove('valid-feedback');
-        nomError.textContent = '';
+    for (const fieldId of formFieldsValidation) {
+        let field = form.elements[fieldId];
+    
+        if(isEmpty(field)){
+            showErrorMessage(field);
+            return; 
+        }
+        showSuccessMessage(field);
     }
 
-})
-
-
-prenomElem.addEventListener('focus', () => {
-    if(prenomElem.classList.contains('is-invalid')){
-        prenomElem.classList.remove('is-invalid'); 
-        prenomError.classList.remove('invalid-feedback');
-        prenomError.textContent = '';
+    
+    const elementsChoisis = document.querySelectorAll(".form-check-input:checked")
+    if(elementsChoisis.length == 0){
+        checkboxError.textContent = "Veillez cocher au moins une matière";
+        return;
     }
-    if(prenomElem.classList.contains('is-valid')){
-        prenomElem.classList.remove('is-valid'); 
-        prenomError.classList.remove('valid-feedback');
-        prenomError.textContent = '';
-    }
+    checkboxError.textContent = "";
 
-})
 
+    const newProf = { 
+        id: professeurs.length + 1, 
+        nom: nomElem.value, 
+        prenom: prenomElem.value,
+        grade: gradeElem.value,
+        matieres: Array.from(elementsChoisis).map(element => element.value)
+    };
+    saveDataProf(newProf);
+    form.reset()
+
+});
 
 document.addEventListener("DOMContentLoaded", () => {
+    loadData();
+    activateFocus();
     genererDataProfesseur();
 });
+
+//const inputs = [nomElem, prenomElem];
+
+const inputs = document.getElementsByClassName('form-control');
+
+function activateFocus(){
+    for (const input of inputs) {
+        input.addEventListener('focus', () => {
+            deleteClass(input, 'is-invalid', 'invalid-feedback');
+            deleteClass(input, 'is-valid', 'valid-feedback');
+        })
+    }
+}
+
+
+// Les fonctions de validation
+
+function isEmpty(champ){
+    return champ.value == '';
+}
+
+// Fonction d'affichage des messages de succès ou d"erreur sur les champs
+
+function showErrorMessage(champ){
+    const champError = document.getElementById(`${champ.id}Error`);
+    champ.classList.add('is-invalid');
+    champError.classList.add('invalid-feedback');
+    champError.textContent = "Ce champ est obligatoire";
+}
+
+function showSuccessMessage(champ){
+    const champError = document.getElementById(`${champ.id}Error`);
+    champ.classList.remove('is-invalid'); 
+    champError.classList.remove('invalid-feedback');
+
+    champ.classList.add('is-valid');
+    champError.classList.add('valid-feedback');
+
+    champError.textContent = '';
+}
+
+function deleteClass(champ, classInput, classError){
+    const champError = document.getElementById(`${champ.id}Error`);
+    if(nomElem.classList.contains(classInput)){
+        champ.classList.remove(classInput); 
+        champError.classList.remove(classError);
+        champError.textContent = '';
+    }
+}
 
 
 
@@ -109,14 +130,18 @@ const tbody = document.getElementById("tbodyProfs");
 document.getElementById("btnOpenForm").addEventListener("click", openForm);
 document.getElementById("closeForm").addEventListener("click", closeForm);
 
+
+// Fonction d'accès aux données
 function genererDataProfesseur() {
     tbody.innerHTML = "";
     professeurs.forEach((professeur) => {
+        const badges = professeur.matieres.map(matiere => `<span class="badge text-bg-primary mr-1">${matiere}</span>`);
         const row = document.createElement("tr");
         row.innerHTML = `
             <td>${professeur.nom}</td>
             <td>${professeur.prenom}</td>
-            <td>${professeur.specialite}</td>
+            <td>${professeur.grade}</td>
+            <td>${badges}</td>
             <td>
                 <button class="btn btn-sm btn-warning">Modifier</button>
                 <button class="btn btn-sm btn-danger">Supprimer</button>
@@ -126,6 +151,18 @@ function genererDataProfesseur() {
     });
 }
 
+function loadData(){
+    professeurs = localStorage.key("professeurs") != null ? JSON.parse(localStorage.getItem("professeurs")) : [];
+}
+
+
+function saveDataProf(newProf) {
+    professeurs.push(newProf);
+    genererDataProfesseur();
+    closeForm('createForm');
+
+    localStorage.setItem("professeurs", JSON.stringify(professeurs));
+}
 
 function openForm() {
     form.style.display = "block";

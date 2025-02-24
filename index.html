@@ -13,6 +13,7 @@
             integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
             crossorigin="anonymous"
         />
+        <link rel="stylesheet" href="styles.css">
     </head>
 
     <body>
@@ -39,6 +40,8 @@
                                     <tr>
                                         <th>Nom</th>
                                         <th>Prénom</th>
+                                        <th>Grade</th>
+                                        <th>Matières</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -58,7 +61,7 @@
                             <div class="modal-body">
                                 <div class="mb-3">
                                     <label class="form-label">Nom</label>
-                                    <input class="form-control" id="nom" />
+                                    <input class="form-control" id="nom" name="nom" />
                                     <span class="" id="nomError"></span> 
                                 </div>
                                 <div class="mb-3">
@@ -66,7 +69,37 @@
                                     <input class="form-control " id="prenom" />
                                     <span class="" id="prenomError"></span>
                                 </div>
-
+                                <div class="mb-3">
+                                    <label class="form-label">Grade</label>
+                                    <select class="form-control " id="grade">
+                                        <option value="">Selectionner une option</option>
+                                        <option value="Master">Master</option>
+                                        <option value="Ingénieur">Ingénieur</option>
+                                        <option value="Doctorat">Doctorat</option>
+                                    </select>
+                                    <span class="" id="gradeError"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Modules</label>
+                                    <div class="mb-1">
+                                        <span class="text-danger" id="checkboxError"></span>
+                                    </div>
+                                    
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="php" value="PHP">
+                                            <label class="form-check-label">PHP</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="java" value="Java">
+                                            <label class="form-check-label">Java</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="js" value="JavaScript">
+                                            <label class="form-check-label">JavaScript</label>
+                                        </div>
+                                    </div>                                
+                                </div>
                             </div>
 
                             <div class="modal-footer">
